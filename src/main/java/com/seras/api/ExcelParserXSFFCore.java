@@ -1,12 +1,13 @@
 package com.seras.api;
 
+import com.seras.constants.LogConstants;
 import com.seras.enums.SpreadSheetFormat;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
 import com.seras.interfaces.ExcelParserXSSF;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -25,10 +26,12 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
     public static ExcelParserXSFFCore getInstance(){
         if (excelParserXSFFCore==null)
             excelParserXSFFCore=new ExcelParserXSFFCore();
+        startPointer=0;
         return excelParserXSFFCore;
     }
     /* end singleton */
 
+    private static int startPointer=0;
     Logger logger = Logger.getLogger(ExcelParserXSFFCore.class.getName());
 
     @Override
@@ -121,12 +124,32 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
 
     @Override
     public List<Map<String, String>> parseXssfSheetToMapList(XSSFSheet sheet, boolean isFirstRowCellHeader,int startPos) {
-        return null;
+        if (sheet==null)
+            return null;
+
+        List<Map<String,String>> rowListAsMap=new ArrayList<>();
+
+
+        List<XSSFRow> xssfRowList = getXssfRowsBySheet(sheet);
+
+        if (Optional.ofNullable(xssfRowList).map(List::size).orElse(0).equals(0)) {
+            logger.warning(LogConstants.getInstance().msgRowListEmpty);
+            return null;
+        }
+        logger.info("Start parsing rows to map...");
+        xssfRowList.forEach(s->{
+            Map<String,String> rowMap = parseXssfRowToMap(s,isFirstRowCellHeader);
+            rowListAsMap.add(rowMap);
+        });
+
+
+
+        return rowListAsMap;
     }
 
 
     @Override
-    public List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row,int startPos) {
+    public List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row) {
         if (row==null)
         {
             logger.warning("Row is empty return null");
@@ -136,18 +159,18 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         int cellCountOfTargetRow;
         List<String> headerList=new ArrayList<>();
 
-        targetRow = row.getSheet().getRow(startPos);
+        targetRow = row.getSheet().getRow(startPointer);
 
         if (targetRow==null){
-            logger.warning(String.format("row key : %s is empty row",startPos));
+            logger.warning(String.format("row key : %s is empty row",startPointer));
             return  null;
         }
 
         cellCountOfTargetRow=targetRow.getLastCellNum();
-        logger.info(String.format("Searching Xssf cell header by row. Start row ->%s",startPos));
+        logger.info(String.format("Searching Xssf cell header by row. Start row ->%s",startPointer));
         for (int i =0;i<cellCountOfTargetRow;i++){
-
-            headerList.add(targetRow.getCell(i).getStringCellValue());
+            String cellRawValue =targetRow.getCell(i).toString();
+            headerList.add(cellRawValue);
         }
 
         logger.info(String.format("Document headers -> %s", String.join(",", headerList)));
@@ -157,28 +180,73 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
 
     @Override
     public List<String> findCellHeaderNamesByFirstXssfRowDefault(XSSFRow row) {
-        return null;
+        if (row==null)
+            return null;
+
+        List<String> headerList =new ArrayList<>();
+        int  firstRowCellNumber ;
+
+
+        firstRowCellNumber=row.getSheet().getRow(0).getLastCellNum();
+
+        for (int i =0;i<firstRowCellNumber;i++){
+            headerList.add(CellReference.convertNumToColString(i));
+        }
+
+        return headerList;
     }
 
     @Override
-    public Map<String, String> parseXssfRowToMap(XSSFRow row, boolean isFirstRowCellHeader,int startPos) {
-        if (row==null)return null;
-
-        Map<String,String> map = new HashMap<>();
-        List<XSSFCell> cells=  getXssfCellsByRow(row);
-        List<String> headerList=null ;
-        int firstRowCellNumber=0;
-
-        if(isFirstRowCellHeader){
-            headerList = findCellHeaderNamesFromFirstRowXssfRowByRow(row, startPos);
-        }else{
-            firstRowCellNumber = row.getSheet().getRow(0).getLastCellNum();
-
-
+    public Map<String, String> parseXssfRowToMap(XSSFRow row, boolean isFirstRowCellHeader) {
+        if (row==null)
+        {
+            logger.warning(LogConstants.getInstance().msgRowEmpty);
+            return null;
         }
 
-        return  null;
+        Map<String,String> map = new HashMap<>();
+        List<String> headerList ;
+        Iterator<Cell> cellIterator=row.cellIterator();
+
+
+        if(isFirstRowCellHeader){
+            headerList = findCellHeaderNamesFromFirstRowXssfRowByRow(row);
+        }else{
+            headerList =findCellHeaderNamesByFirstXssfRowDefault(row);
+        }
+
+        if(headerList==null)
+        {
+            logger.warning(LogConstants.getInstance().msgHeaderListEmpty);
+            return null;
+        }
+
+        logger.info(String.format("Header List ->%s",String.join(",", headerList)));
+        int columnHeaderCounter=0;
+        while (cellIterator.hasNext()){
+
+            if (columnHeaderCounter>headerList.size()) {
+                break;
+            }
+
+            XSSFCell xssfCell = (XSSFCell) cellIterator.next();
+            map.put(headerList.get(columnHeaderCounter), xssfCell.toString());
+
+            columnHeaderCounter++;
+        }
+
+        List<String> mapLogList =new ArrayList<>();
+        map.forEach((s,v)-> mapLogList.add(String.format("\n  Cell Header : %s,Value : %s",s,v)));
+        logger.info(String.format("Row Parsed To Map. %s",String.join(",",mapLogList)));
+        return  map;
     }
 
+    public ExcelParserXSSF setStartPointer(int startPointer){
+        this.startPointer=startPointer;
+        return this;
+    }
 
+    public int getStartPointer() {
+        return startPointer;
+    }
 }

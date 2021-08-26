@@ -62,8 +62,6 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         return  sheets;
     }
 
-
-
     @Override
     public HSSFSheet getHssfSheetFromFileByIndex(File file, int index) throws IOException, InvalidSpreadSheetFormatException {
         HSSFWorkbook workbook = getHssfWorkbookFromFile(file);
@@ -72,16 +70,11 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         return workbook.getSheetAt(index);
 
     }
-
     @Override
     public HSSFSheet getHssfSheetFromFileByName(File file, String sheet) throws IOException, InvalidSpreadSheetFormatException {
         HSSFWorkbook workbook =getHssfWorkbookFromFile(file);
         return workbook.getSheet(sheet);
     }
-
-
-
-
 
     @Override
     public List<HSSFRow> getHssfRowsBySheet(HSSFSheet sheet) {
@@ -94,8 +87,6 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         return  rows;
     }
 
-
-
     @Override
     public HSSFRow getHssfRowBySheetAndIndex(HSSFSheet sheet, int index) {
         if (sheet==null)
@@ -106,7 +97,6 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
     @Override
     public List<HSSFCell> getHssfCellsByRow(HSSFRow row) {
         if (row==null)return null;
-
 
         List<HSSFCell> cells=new ArrayList<>();
         Iterator<Cell> cellIterator=row.cellIterator();
