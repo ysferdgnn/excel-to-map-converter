@@ -56,7 +56,7 @@ public class ExcelParserHSSFCoreTest {
     }
 
     @Test
-    public void testGetHssfSheetsFromFile() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+    public void testGetHssfSheetsFromFile() throws IOException, InvalidSpreadSheetFormatException {
         List<HSSFSheet> sheetsHssf = excelParserHSSFCore.getHssfSheetsFromFile(hssfFile);
 
         Assert.assertTrue(sheetsHssf.size()>0);
@@ -83,7 +83,7 @@ public class ExcelParserHSSFCoreTest {
     }
 
     @Test
-    public void testGetHssfRowsBySheet() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+    public void testGetHssfRowsBySheet() throws IOException, InvalidSpreadSheetFormatException {
 
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         List<HSSFRow> rows = excelParserHSSFCore.getHssfRowsBySheet(sheet);
@@ -138,6 +138,7 @@ public class ExcelParserHSSFCoreTest {
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
         List<String> headerList = excelParserHSSFCore.findCellHeaderNamesFromFirstRowHssfRowByRow(row,0);
+        Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 
     @Test
@@ -146,5 +147,6 @@ public class ExcelParserHSSFCoreTest {
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
         List<String> headerList = excelParserHSSFCore.findCellHeaderNamesFromFirstRowHssfRowByRow(row,Integer.MAX_VALUE);
+        Assert.assertEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 }

@@ -35,9 +35,9 @@ public interface ExcelParserXSSF {
 
     List<Map<String,String>> parseXssfSheetToMapList(XSSFSheet sheet, boolean isFirstRowCellHeader, int startPos);
 
-    Map<String,String>       parseXssfRowToMap(XSSFRow row,boolean isFirstRowCellHeader,int startPos);
+    Map<String,String>       parseXssfRowToMap(XSSFRow row,boolean isFirstRowCellHeader);
 
-    List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row,int startPos);
+    List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row);
 
     List<String > findCellHeaderNamesByFirstXssfRowDefault(XSSFRow row);
 }

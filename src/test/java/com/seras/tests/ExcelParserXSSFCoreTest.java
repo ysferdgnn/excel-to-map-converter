@@ -13,22 +13,21 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ExcelParserXSSFCoreTest {
 
 
     String workingDir=System.getProperty("user.dir");
     String xssfFileName="files\\xssfTestFile.xlsx";
-
     String nonExcelFileName ="files\\test.txt";
+    String asyncColumnsExcelFileName ="files\\xssfTestFileAsyncColumns.xlsx";
     String xssfFilePath;
     String nonExcelFilePath;
-
+    String asyncColumnsExcelFilePath;
     File xssfFile ;
     File nonExcelFile;
+    File asyncColumnsExcelFile;
 
    ExcelParserXSFFCore excelParserXSFFCore;
 
@@ -38,18 +37,11 @@ public class ExcelParserXSSFCoreTest {
         excelParserXSFFCore= ExcelParserXSFFCore.getInstance();
         xssfFilePath=workingDir+"\\"+xssfFileName;
         nonExcelFilePath=workingDir+"\\"+nonExcelFileName;
+        asyncColumnsExcelFilePath=workingDir+"\\"+asyncColumnsExcelFileName;
+
         xssfFile = new File(xssfFilePath);
         nonExcelFile=new File(nonExcelFilePath);
-    }
-
-    @Test
-    public void testParseXssfRowToMap() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
-        XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
-        XSSFRow row= excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
-
-        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,false,0);
-
-
+        asyncColumnsExcelFile=new File(asyncColumnsExcelFilePath);
     }
 
     @Test
@@ -57,7 +49,7 @@ public class ExcelParserXSSFCoreTest {
         XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserXSFFCore.findCellHeaderNamesFromFirstRowXssfRowByRow(row,0 );
+        List<String> headerList = excelParserXSFFCore.findCellHeaderNamesFromFirstRowXssfRowByRow(row);
         Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 
@@ -66,7 +58,7 @@ public class ExcelParserXSSFCoreTest {
         XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserXSFFCore.findCellHeaderNamesFromFirstRowXssfRowByRow(row,Integer.MAX_VALUE );
+        List<String> headerList = excelParserXSFFCore.setStartPointer(Integer.MAX_VALUE).findCellHeaderNamesFromFirstRowXssfRowByRow(row );
         Assert.assertEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 
@@ -157,6 +149,78 @@ public class ExcelParserXSSFCoreTest {
         Assert.assertNotNull(workbookXssf);
     }
 
+    @Test
+    public void testParseXssfRowToMap() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
+        XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
+        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,false);
+        Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(map).map(Map::size).orElse(0));
+
+    }
+
+    @Test
+    public void testParseXssfRowToMapFirstRowAsCellHeader() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
+        XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
+        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,true);
+        Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(map).map(Map::size).orElse(0));
+
+        assert map != null;
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("ad")));
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("soyad")));
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("tc")));
+
+        Assert.assertEquals(map.get("ad"),"ad" );
+        Assert.assertEquals(map.get("soyad"),"soyad" );
+        Assert.assertEquals(map.get("tc"),"tc" );
+
+    }
+
+    @Test
+    public void testParseXssfRowToMapFirstRowAsCellHeaderSecondRow() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
+        XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,1);
+        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,true);
+
+        assert map !=null;
+        Assert.assertNotEquals(0,map.size());
+
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("ad")));
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("soyad")));
+        Assert.assertTrue(map.keySet().stream().anyMatch(s->s.contentEquals("tc")));
+
+        Assert.assertEquals(map.get("ad"),"yusuf" );
+        Assert.assertEquals(map.get("soyad"),"erdoğan" );
+        Assert.assertEquals(map.get("tc"),"231.0" );
+
+
+
+    }
+
+    @Test
+    public void testParseXssfSheetToMapList() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+        XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
+        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet,false,0);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0,maps.size());
+        Assert.assertEquals(6,maps.size());
+    }
+
+    @Test
+    public void testParseXssfSheetToMapListAsyncColumns() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+        XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(asyncColumnsExcelFile,0);
+        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet,true,0);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0,maps.size());
+
+    }
 
     
 }
