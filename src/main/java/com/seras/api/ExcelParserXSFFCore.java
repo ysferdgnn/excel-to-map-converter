@@ -4,6 +4,8 @@ import com.seras.constants.LogConstants;
 import com.seras.enums.SpreadSheetFormat;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
 import com.seras.interfaces.ExcelParserXSSF;
+import org.apache.commons.math3.analysis.function.Log;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -22,16 +24,22 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
 
     /* begin singleton */
     private static  ExcelParserXSFFCore excelParserXSFFCore;
-    private ExcelParserXSFFCore(){};
+    private ExcelParserXSFFCore(){}
     public static ExcelParserXSFFCore getInstance(){
+
         if (excelParserXSFFCore==null)
             excelParserXSFFCore=new ExcelParserXSFFCore();
-        startPointer=0;
+
+        rowPointer =0;
+        isFirstRowCellHeader=false;
+        sheetPointer=0;
         return excelParserXSFFCore;
     }
     /* end singleton */
 
-    private static int startPointer=0;
+    private static int rowPointer =0;
+    private static  boolean isFirstRowCellHeader=false;
+    private static int sheetPointer =0;
     Logger logger = Logger.getLogger(ExcelParserXSFFCore.class.getName());
 
     @Override
@@ -123,7 +131,7 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
 
 
     @Override
-    public List<Map<String, String>> parseXssfSheetToMapList(XSSFSheet sheet, boolean isFirstRowCellHeader,int startPos) {
+    public List<Map<String, String>> parseXssfSheetToMapList(XSSFSheet sheet) {
         if (sheet==null)
             return null;
 
@@ -138,7 +146,7 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         }
         logger.info("Start parsing rows to map...");
         xssfRowList.forEach(s->{
-            Map<String,String> rowMap = parseXssfRowToMap(s,isFirstRowCellHeader);
+            Map<String,String> rowMap = parseXssfRowToMap(s);
             rowListAsMap.add(rowMap);
         });
 
@@ -147,6 +155,22 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         return rowListAsMap;
     }
 
+
+    @Override
+    public List<Map<String, String>> parseXssfWorkBookToMapList(XSSFWorkbook workbook) {
+        XSSFSheet sheet =workbook.getSheetAt(sheetPointer);
+        if(sheet==null){
+            logger.warning(LogConstants.getInstance().msgSheetEmty);
+            return null;
+        }
+        List<Map<String,String>> mapList = parseXssfSheetToMapList(sheet);
+        return mapList;
+    }
+
+    @Override
+    public List<Map<String, String>> parseExcelFileToMapList(File file) {
+        return null;
+    }
 
     @Override
     public List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row) {
@@ -159,15 +183,15 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         int cellCountOfTargetRow;
         List<String> headerList=new ArrayList<>();
 
-        targetRow = row.getSheet().getRow(startPointer);
+        targetRow = row.getSheet().getRow(rowPointer);
 
         if (targetRow==null){
-            logger.warning(String.format("row key : %s is empty row",startPointer));
+            logger.warning(String.format("row key : %s is empty row", rowPointer));
             return  null;
         }
 
         cellCountOfTargetRow=targetRow.getLastCellNum();
-        logger.info(String.format("Searching Xssf cell header by row. Start row ->%s",startPointer));
+        logger.info(String.format("Searching Xssf cell header by row. Start row ->%s", rowPointer));
         for (int i =0;i<cellCountOfTargetRow;i++){
             String cellRawValue =targetRow.getCell(i).toString();
             headerList.add(cellRawValue);
@@ -197,7 +221,7 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
     }
 
     @Override
-    public Map<String, String> parseXssfRowToMap(XSSFRow row, boolean isFirstRowCellHeader) {
+    public Map<String, String> parseXssfRowToMap(XSSFRow row) {
         if (row==null)
         {
             logger.warning(LogConstants.getInstance().msgRowEmpty);
@@ -206,7 +230,6 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
 
         Map<String,String> map = new HashMap<>();
         List<String> headerList ;
-        Iterator<Cell> cellIterator=row.cellIterator();
 
 
         if(isFirstRowCellHeader){
@@ -222,17 +245,12 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         }
 
         logger.info(String.format("Header List ->%s",String.join(",", headerList)));
-        int columnHeaderCounter=0;
-        while (cellIterator.hasNext()){
 
-            if (columnHeaderCounter>headerList.size()) {
-                break;
-            }
 
-            XSSFCell xssfCell = (XSSFCell) cellIterator.next();
-            map.put(headerList.get(columnHeaderCounter), xssfCell.toString());
-
-            columnHeaderCounter++;
+        for (int i =0;i<headerList.size();i++){
+            XSSFCell cell= row.getCell(i);
+            String cellValueAsString = cell ==null ? "":cell.toString();
+            map.put(headerList.get(i),cellValueAsString);
         }
 
         List<String> mapLogList =new ArrayList<>();
@@ -241,12 +259,27 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         return  map;
     }
 
-    public ExcelParserXSSF setStartPointer(int startPointer){
-        this.startPointer=startPointer;
+    @Override
+    public List<Map<String, String>> parseXssfFileToMapList(File file) throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+        if(file==null){
+            logger.warning(LogConstants.getInstance().msgFileEmpty);
+            return null;
+        }
+        XSSFWorkbook workbook = getXssfWorkbookFromFile(file);
+        return parseXssfWorkBookToMapList(workbook);
+    }
+
+    public ExcelParserXSFFCore setRowPointer(int startPointer){
+        ExcelParserXSFFCore.rowPointer =startPointer;
+        return this;
+    }
+    public  ExcelParserXSFFCore setIsFirstRowCellHeader(boolean isFirstRowCellHeader){
+        ExcelParserXSFFCore.isFirstRowCellHeader = isFirstRowCellHeader;
+        return this;
+    }
+    public ExcelParserXSFFCore setSheetPointer(int sheetPointer){
+        ExcelParserXSFFCore.sheetPointer=sheetPointer;
         return this;
     }
 
-    public int getStartPointer() {
-        return startPointer;
-    }
 }
