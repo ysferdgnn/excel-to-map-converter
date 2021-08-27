@@ -1,10 +1,8 @@
 package com.seras.tests;
 
 import com.seras.api.ExcelParserXSFFCore;
-import com.seras.exceptions.InValidFileFormatException;
-import com.seras.exceptions.InvalidFileExtensionNameException;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
-import com.seras.exceptions.NotFileException;
+import com.seras.testConstants.TestFileConstants;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -16,21 +14,14 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ExcelParserXSSFCoreTest {
 
 
-    String workingDir=System.getProperty("user.dir");
-    String xssfFileName="files\\xssfTestFile.xlsx";
-    String nonExcelFileName ="files\\test.txt";
-    String asyncColumnsExcelFileName ="files\\xssfTestFileAsyncColumns.xlsx";
-    String xssfFilePath;
-    String nonExcelFilePath;
-    String asyncColumnsExcelFilePath;
-    File xssfFile ;
-    File nonExcelFile;
-    File asyncColumnsExcelFile;
+
 
    ExcelParserXSFFCore excelParserXSFFCore;
 
@@ -38,17 +29,14 @@ public class ExcelParserXSSFCoreTest {
     public void initTest(){
 
         excelParserXSFFCore= ExcelParserXSFFCore.getInstance();
-        xssfFilePath=workingDir+"\\"+xssfFileName;
-        nonExcelFilePath=workingDir+"\\"+nonExcelFileName;
-        asyncColumnsExcelFilePath=workingDir+"\\"+asyncColumnsExcelFileName;
 
-        xssfFile = new File(xssfFilePath);
-        nonExcelFile=new File(nonExcelFilePath);
-        asyncColumnsExcelFile=new File(asyncColumnsExcelFilePath);
     }
 
     @Test
     public void testFindCellHeaderNamesFromFirstRowXssfRowByRow() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
 
@@ -58,6 +46,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testFindCellHeaderNamesFromFirstRowXssfRowByEmptyRow() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
 
@@ -67,6 +58,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public  void testGetXssfCellByRowAndIndexOverflowIndex() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet, 0);
         XSSFCell cell = excelParserXSFFCore.getXssfCellByRowAndIndex(row,Integer.MAX_VALUE);
@@ -82,6 +76,9 @@ public class ExcelParserXSSFCoreTest {
     }
     @Test
     public  void testGetXssfCellByRowAndIndex() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet, 0);
         XSSFCell cell = excelParserXSFFCore.getXssfCellByRowAndIndex(row,0);
@@ -91,6 +88,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public  void testGetXssfCellsByRow() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet=excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row= excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
         List<XSSFCell> cells = excelParserXSFFCore.getXssfCellsByRow(row);
@@ -100,6 +100,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public  void testGetXssfRowBySheetAndIndex() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet= excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
         Assert.assertNotNull(row);
@@ -107,6 +110,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public  void testGetXssfRowBySheetAndIndexOverflowIndex() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet= excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,Integer.MAX_VALUE);
         Assert.assertNull(row);
@@ -114,6 +120,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public  void testGetXssfSheetFromFileByName() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByName(xssfFile,"Sheet1");
         XSSFSheet sheetWrong = excelParserXSFFCore.getXssfSheetFromFileByName(xssfFile,"SAURON");
 
@@ -123,6 +132,8 @@ public class ExcelParserXSSFCoreTest {
     @Test
     public void testGetXssfRowsBySheet() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
 
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         List<XSSFRow> rows = excelParserXSFFCore.getXssfRowsBySheet(sheet);
 
@@ -131,6 +142,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void  testGetXssfSheetFromFileByIndex() throws IOException, InvalidSpreadSheetFormatException, InvalidFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFSheet sheetOverflowIndex = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,10);
 
@@ -140,6 +154,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testGetXssfSheetsFromFile() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         List<XSSFSheet> sheetsXssf = excelParserXSFFCore.getXssfSheetsFromFile(xssfFile);
 
         Assert.assertTrue(sheetsXssf.size()>0);
@@ -148,12 +165,17 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testGetXssfWorkbookFromFile() throws  IOException, InvalidSpreadSheetFormatException, InvalidFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFWorkbook workbookXssf = excelParserXSFFCore.getXssfWorkbookFromFile(xssfFile);
         Assert.assertNotNull(workbookXssf);
     }
 
     @Test
     public void testParseXssfRowToMap() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
@@ -164,6 +186,8 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfRowToMapFirstRowAsCellHeader() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
@@ -183,6 +207,8 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfRowToMapFirstRowAsCellHeaderSecondRow() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,1);
@@ -205,6 +231,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfSheetToMapList() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet);
 
@@ -216,6 +245,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfSheetToMapListAsyncColumns() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File asyncColumnsExcelFile = TestFileConstants.getInstance().getXssfFileAsyncCols();
+
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(asyncColumnsExcelFile,0);
         List<Map<String,String>> maps = excelParserXSFFCore.setIsFirstRowCellHeader(true).parseXssfSheetToMapList(sheet);
 
@@ -227,6 +259,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfWorkBookToMapList() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File xssfFile = TestFileConstants.getInstance().getXssfFile();
+
        XSSFWorkbook workbook = excelParserXSFFCore.getXssfWorkbookFromFile(xssfFile);
        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
 
@@ -238,6 +273,9 @@ public class ExcelParserXSSFCoreTest {
 
     @Test
     public void testParseXssfWorkBookToMapListAsyncRowExcelFile() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+
+        File asyncColumnsExcelFile = TestFileConstants.getInstance().getXssfFileAsyncCols();
+
         XSSFWorkbook workbook = excelParserXSFFCore.getXssfWorkbookFromFile(asyncColumnsExcelFile);
         List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
 
@@ -248,7 +286,12 @@ public class ExcelParserXSSFCoreTest {
     }
 
     @Test
-    public void testParseXssfWorkBookToMapListAsyncRowExcelFileWithFirstRowsAsHeader() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException, InValidFileFormatException, InvalidFileExtensionNameException, NotFileException {
+    public void testParseXssfWorkBookToMapListAsyncRowExcelFileWithFirstRowsAsHeader() throws IOException, InvalidFormatException,
+            InvalidSpreadSheetFormatException{
+
+        File asyncColumnsExcelFile = TestFileConstants.getInstance().getXssfFileAsyncCols();
+
+
         XSSFWorkbook workbook = excelParserXSFFCore.setIsFirstRowCellHeader(true).getXssfWorkbookFromFile(asyncColumnsExcelFile);
         List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
 

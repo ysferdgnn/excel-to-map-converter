@@ -1,7 +1,5 @@
 package com.seras.testSuites;
 
-import com.seras.interfaces.ExcelParserXSSF;
-import com.seras.interfaces.ExcelUtil;
 import com.seras.tests.ExcelParserHSSFCoreTest;
 import com.seras.tests.ExcelParserXSSFCoreTest;
 import com.seras.tests.ExcelToMapConverterTest;

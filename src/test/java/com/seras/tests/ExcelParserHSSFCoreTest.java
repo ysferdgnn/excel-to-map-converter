@@ -1,13 +1,12 @@
 package com.seras.tests;
 
 import com.seras.api.ExcelParserHSSFCore;
-import com.seras.api.ExcelToMapConverterImplementation;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
+import com.seras.testConstants.TestFileConstants;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,18 +19,7 @@ import java.util.Optional;
 
 public class ExcelParserHSSFCoreTest {
 
-    String workingDir=System.getProperty("user.dir");
-    String xssfFileName="files\\xssfTestFile.xlsx";
-    String hssfFileName="files\\hssfTestFile.xls";
-    String nonExcelFileName ="files\\test.txt";
 
-    String xssfFilePath;
-    String hssfFilePath;
-    String nonExcelFilePath;
-
-    File xssfFile ;
-    File hssfFile ;
-    File nonExcelFile;
 
     ExcelParserHSSFCore excelParserHSSFCore ;
 
@@ -41,24 +29,17 @@ public class ExcelParserHSSFCoreTest {
     public void initTest(){
 
         excelParserHSSFCore=  ExcelParserHSSFCore.getInstance();
-        xssfFilePath=workingDir+"\\"+xssfFileName;
-        hssfFilePath=workingDir+"\\"+hssfFileName;
-        nonExcelFilePath=workingDir+"\\"+nonExcelFileName;
-
-        xssfFile = new File(xssfFilePath);
-        hssfFile =new File(hssfFilePath);
-        nonExcelFile=new File(nonExcelFilePath);
     }
 
     @Test
-    public void testGetHssfWorkbookFromFile() throws IOException, InvalidSpreadSheetFormatException, InvalidFormatException {
-        HSSFWorkbook workbookHssf = excelParserHSSFCore.getHssfWorkbookFromFile(hssfFile);
+    public void testGetHssfWorkbookFromFile() throws IOException, InvalidSpreadSheetFormatException {
+        HSSFWorkbook workbookHssf = excelParserHSSFCore.getHssfWorkbookFromFile(TestFileConstants.getInstance().getHssfFile());
         Assert.assertNotNull(workbookHssf);
     }
 
     @Test
     public void testGetHssfSheetsFromFile() throws IOException, InvalidSpreadSheetFormatException {
-        List<HSSFSheet> sheetsHssf = excelParserHSSFCore.getHssfSheetsFromFile(hssfFile);
+        List<HSSFSheet> sheetsHssf = excelParserHSSFCore.getHssfSheetsFromFile(TestFileConstants.getInstance().getHssfFile());
 
         Assert.assertTrue(sheetsHssf.size()>0);
 
@@ -66,6 +47,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void  testGetHssfSheetFromFileByIndex() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFSheet sheetOverflowIndex = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,10);
 
@@ -75,6 +57,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testGetHssfSheetFromFileByName() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet =excelParserHSSFCore.getHssfSheetFromFileByName(hssfFile,"Sheet1");
 
         HSSFSheet sheetWrongName =excelParserHSSFCore.getHssfSheetFromFileByName(hssfFile,"Saruman");
@@ -85,7 +68,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testGetHssfRowsBySheet() throws IOException, InvalidSpreadSheetFormatException {
-
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         List<HSSFRow> rows = excelParserHSSFCore.getHssfRowsBySheet(sheet);
 
@@ -95,6 +78,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testGetHssfRowBySheetAndIndex() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet =excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row= excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
         Assert.assertNotNull(row);
@@ -102,6 +86,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testGetHssfRowBySheetAndIndexOverflowIndex() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet =excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row= excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,Integer.MAX_VALUE);
         Assert.assertNull(row);
@@ -109,6 +94,7 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void  testGetHssfCellsByRow() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet=excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
         List<HSSFCell> cells =excelParserHSSFCore.getHssfCellsByRow(row);
@@ -125,6 +111,7 @@ public class ExcelParserHSSFCoreTest {
     }
     @Test
     public void testGetHssfCellByRowAndIndex() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
         HSSFCell cell=excelParserHSSFCore.getHssfCellByRowAndIndex(row,0);
@@ -135,6 +122,8 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testFindCellHeaderNamesFromFirstRowHssfRowByRow() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
@@ -144,6 +133,9 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testFindCellHeaderNamesFromFirstRowHssfRowByEmptyRow() throws IOException, InvalidSpreadSheetFormatException {
+
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
@@ -153,10 +145,13 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void testFindCellHeaderNamesByFirstHssfRowDefault() throws IOException, InvalidSpreadSheetFormatException {
+
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserHSSFCore.setRowPointer(Integer.MAX_VALUE).findCellHeaderNamesByFirstHssfRowDefault(row);
+        List<String> headerList = excelParserHSSFCore.findCellHeaderNamesByFirstHssfRowDefault(row);
 
         assert headerList !=null;
 
@@ -166,6 +161,9 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void  testParseHssfSheetToMapList() throws IOException, InvalidSpreadSheetFormatException {
+
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         List<Map<String,String>> maps = excelParserHSSFCore.parseHssfSheetToMapList(sheet);
 
@@ -176,6 +174,9 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public void  testParseHssfSheetToMapListWithFirstRowAsHeader() throws IOException, InvalidSpreadSheetFormatException {
+
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         List<Map<String,String>> maps = excelParserHSSFCore.setIsFirstRowCellHeader(true).parseHssfSheetToMapList(sheet);
 
@@ -187,6 +188,9 @@ public class ExcelParserHSSFCoreTest {
 
     @Test
     public  void testParseHssfWorkBookToMapList() throws IOException, InvalidSpreadSheetFormatException {
+
+        File hssfFile =TestFileConstants.getInstance().getHssfFile();
+
         HSSFWorkbook workbook = excelParserHSSFCore.getHssfWorkbookFromFile(hssfFile);
         List<Map<String,String>> maps = excelParserHSSFCore.parseHssfWorkBookToMapList(workbook);
 
