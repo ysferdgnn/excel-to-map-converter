@@ -33,9 +33,13 @@ public interface ExcelParserXSSF {
 
     XSSFCell getXssfCellByRowAndIndex(XSSFRow row,int index);
 
-    List<Map<String,String>> parseXssfSheetToMapList(XSSFSheet sheet, boolean isFirstRowCellHeader, int startPos);
+    List<Map<String,String>> parseXssfSheetToMapList(XSSFSheet sheet);
+    List<Map<String,String>> parseXssfWorkBookToMapList(XSSFWorkbook workbook);
+    List<Map<String,String>> parseExcelFileToMapList(File file);
 
-    Map<String,String>       parseXssfRowToMap(XSSFRow row,boolean isFirstRowCellHeader);
+    Map<String,String>       parseXssfRowToMap(XSSFRow row);
+
+    List<Map<String,String>> parseXssfFileToMapList(File file) throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException;
 
     List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row);
 

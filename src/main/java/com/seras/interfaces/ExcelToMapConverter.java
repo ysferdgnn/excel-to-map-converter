@@ -9,7 +9,7 @@ public interface ExcelToMapConverter {
 
 
 
-   List<Map<String,String>> parseExcelFileToMapList(File file,boolean isFirstRowCellHeader,int startPos);
+   List<Map<String,String>> parseExcelFileToMapList(File file,boolean isFirstRowCellHeader,int rowPointer,int sheetPointer);
 
 
 

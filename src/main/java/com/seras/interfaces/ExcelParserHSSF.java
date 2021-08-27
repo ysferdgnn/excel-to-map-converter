@@ -8,6 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +34,17 @@ public interface ExcelParserHSSF {
 
     HSSFCell getHssfCellByRowAndIndex(HSSFRow row,int index);
 
-    List<Map<String,String>> parseHssfSheetToMapList(HSSFSheet sheet, boolean isFirstRowCellHeader, int startPos);
+    List<Map<String,String>> parseHssfSheetToMapList(HSSFSheet sheet);
 
-    Map<String,String> parseHssfRowToMap(HSSFRow row,boolean isFirstRowCellHeader,int startPos);
+    Map<String,String> parseHssfRowToMap(HSSFRow row);
 
-    List<String> findCellHeaderNamesFromFirstRowHssfRowByRow(HSSFRow row,int startPos);
+    List<Map<String,String>> parseHssfWorkBookToMapList(HSSFWorkbook workbook);
+
+    List<Map<String,String>> parseHssfFileToMapList(File file) throws IOException, InvalidSpreadSheetFormatException;
+
+    List<String> findCellHeaderNamesFromFirstRowHssfRowByRow(HSSFRow row);
 
     List<String> findCellHeaderNamesByFirstHssfRowDefault(HSSFRow row);
+
+
 }
