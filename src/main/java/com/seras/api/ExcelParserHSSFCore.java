@@ -243,8 +243,9 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         List<String> headerList =new ArrayList<>();
         int  firstRowCellNumber ;
 
+        firstRowCellNumber=    Optional.of(row).map(Row::getSheet).map(s->s.getRow(rowPointer)).map(Row::getLastCellNum).orElse(new Short("0"));
 
-        firstRowCellNumber=row.getSheet().getRow(rowPointer).getLastCellNum();
+//        firstRowCellNumber=row.getSheet().getRow(rowPointer).getLastCellNum();
 
         for (int i =0;i<firstRowCellNumber;i++){
             headerList.add(CellReference.convertNumToColString(i));
