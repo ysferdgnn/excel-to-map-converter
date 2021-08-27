@@ -1,7 +1,10 @@
 package com.seras.tests;
 
 import com.seras.api.ExcelParserXSFFCore;
+import com.seras.exceptions.InValidFileFormatException;
+import com.seras.exceptions.InvalidFileExtensionNameException;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
+import com.seras.exceptions.NotFileException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -58,7 +61,7 @@ public class ExcelParserXSSFCoreTest {
         XSSFSheet sheet =excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserXSFFCore.setStartPointer(Integer.MAX_VALUE).findCellHeaderNamesFromFirstRowXssfRowByRow(row );
+        List<String> headerList = excelParserXSFFCore.setRowPointer(Integer.MAX_VALUE).findCellHeaderNamesFromFirstRowXssfRowByRow(row );
         Assert.assertEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 
@@ -154,7 +157,7 @@ public class ExcelParserXSSFCoreTest {
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
-        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,false);
+        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row);
         Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(map).map(Map::size).orElse(0));
 
     }
@@ -164,7 +167,7 @@ public class ExcelParserXSSFCoreTest {
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,0);
-        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,true);
+        Map<String,String> map = excelParserXSFFCore.setIsFirstRowCellHeader(true).parseXssfRowToMap(row);
         Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(map).map(Map::size).orElse(0));
 
         assert map != null;
@@ -183,7 +186,7 @@ public class ExcelParserXSSFCoreTest {
 
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
         XSSFRow row = excelParserXSFFCore.getXssfRowBySheetAndIndex(sheet,1);
-        Map<String,String> map = excelParserXSFFCore.parseXssfRowToMap(row,true);
+        Map<String,String> map = excelParserXSFFCore.setIsFirstRowCellHeader(true).parseXssfRowToMap(row);
 
         assert map !=null;
         Assert.assertNotEquals(0,map.size());
@@ -203,22 +206,55 @@ public class ExcelParserXSSFCoreTest {
     @Test
     public void testParseXssfSheetToMapList() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(xssfFile,0);
-        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet,false,0);
+        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet);
 
         assert maps !=null;
 
         Assert.assertNotEquals(0,maps.size());
-        Assert.assertEquals(6,maps.size());
+        Assert.assertEquals(7,maps.size());
     }
 
     @Test
     public void testParseXssfSheetToMapListAsyncColumns() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
         XSSFSheet sheet = excelParserXSFFCore.getXssfSheetFromFileByIndex(asyncColumnsExcelFile,0);
-        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfSheetToMapList(sheet,true,0);
+        List<Map<String,String>> maps = excelParserXSFFCore.setIsFirstRowCellHeader(true).parseXssfSheetToMapList(sheet);
 
         assert maps !=null;
 
         Assert.assertNotEquals(0,maps.size());
+
+    }
+
+    @Test
+    public void testParseXssfWorkBookToMapList() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+       XSSFWorkbook workbook = excelParserXSFFCore.getXssfWorkbookFromFile(xssfFile);
+       List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
+
+       assert maps !=null;
+
+       Assert.assertNotEquals(0, maps.size());
+
+    }
+
+    @Test
+    public void testParseXssfWorkBookToMapListAsyncRowExcelFile() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException {
+        XSSFWorkbook workbook = excelParserXSFFCore.getXssfWorkbookFromFile(asyncColumnsExcelFile);
+        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0, maps.size());
+
+    }
+
+    @Test
+    public void testParseXssfWorkBookToMapListAsyncRowExcelFileWithFirstRowsAsHeader() throws IOException, InvalidFormatException, InvalidSpreadSheetFormatException, InValidFileFormatException, InvalidFileExtensionNameException, NotFileException {
+        XSSFWorkbook workbook = excelParserXSFFCore.setIsFirstRowCellHeader(true).getXssfWorkbookFromFile(asyncColumnsExcelFile);
+        List<Map<String,String>> maps = excelParserXSFFCore.parseXssfWorkBookToMapList(workbook);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0, maps.size());
 
     }
 

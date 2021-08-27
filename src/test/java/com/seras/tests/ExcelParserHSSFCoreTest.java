@@ -15,6 +15,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class ExcelParserHSSFCoreTest {
@@ -137,7 +138,7 @@ public class ExcelParserHSSFCoreTest {
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserHSSFCore.findCellHeaderNamesFromFirstRowHssfRowByRow(row,0);
+        List<String> headerList = excelParserHSSFCore.findCellHeaderNamesFromFirstRowHssfRowByRow(row);
         Assert.assertNotEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
     }
 
@@ -146,7 +147,50 @@ public class ExcelParserHSSFCoreTest {
         HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
         HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
 
-        List<String> headerList = excelParserHSSFCore.findCellHeaderNamesFromFirstRowHssfRowByRow(row,Integer.MAX_VALUE);
+        List<String> headerList = excelParserHSSFCore.setRowPointer(Integer.MAX_VALUE).findCellHeaderNamesFromFirstRowHssfRowByRow(row);
         Assert.assertEquals(Optional.of(0).get(),Optional.ofNullable(headerList).map(List::size).orElse(0));
+    }
+
+    @Test
+    public void testFindCellHeaderNamesByFirstHssfRowDefault() throws IOException, InvalidSpreadSheetFormatException {
+        HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
+        HSSFRow row = excelParserHSSFCore.getHssfRowBySheetAndIndex(sheet,0);
+
+        List<String> headerList = excelParserHSSFCore.setRowPointer(Integer.MAX_VALUE).findCellHeaderNamesByFirstHssfRowDefault(row);
+
+        assert headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("A",headerList.get(0));
+    }
+
+    @Test
+    public void  testParseHssfSheetToMapList() throws IOException, InvalidSpreadSheetFormatException {
+        HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
+        List<Map<String,String>> maps = excelParserHSSFCore.parseHssfSheetToMapList(sheet);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0,maps.size());
+    }
+
+    @Test
+    public void  testParseHssfSheetToMapListWithFirstRowAsHeader() throws IOException, InvalidSpreadSheetFormatException {
+        HSSFSheet sheet = excelParserHSSFCore.getHssfSheetFromFileByIndex(hssfFile,0);
+        List<Map<String,String>> maps = excelParserHSSFCore.setIsFirstRowCellHeader(true).parseHssfSheetToMapList(sheet);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals(0,maps.size());
+        Assert.assertTrue(maps.stream().findFirst().get().keySet().stream().anyMatch(s->s.contentEquals("ad")));
+    }
+
+    @Test
+    public  void testParseHssfWorkBookToMapList() throws IOException, InvalidSpreadSheetFormatException {
+        HSSFWorkbook workbook = excelParserHSSFCore.getHssfWorkbookFromFile(hssfFile);
+        List<Map<String,String>> maps = excelParserHSSFCore.parseHssfWorkBookToMapList(workbook);
+
+        assert maps!=null;
+        Assert.assertNotEquals(0,maps.size());
     }
 }
