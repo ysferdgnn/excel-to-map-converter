@@ -14,4 +14,6 @@ public class LogConstants {
     public String msgHeaderListEmpty ="HeaderList is empty. Return null";
     public String msgRowListEmpty ="Row list is empty. Return null";
     public String msgSheetEmty="Sheet is empty.Return null";
+    public String msgWorkbookEmpty ="Workbook is empty. Return null";
+    public String msgFileEmpty ="File is empty.Return null";
 }
