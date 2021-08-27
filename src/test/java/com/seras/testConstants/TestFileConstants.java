@@ -16,7 +16,7 @@ public class TestFileConstants {
   private final  String hssfFileName="\\files\\hssfTestFile.xls";
   private final  String nonExcelFileName ="\\files\\test.txt";
   private final  String hssfFileAsyncColumnsName="\\files\\hssfTestFileAsyncColumns.xls";
-  private final  String xssfFileAsyncColumnsName="\\files\\xssfTestFileAsyncColumns.xls";
+  private final  String xssfFileAsyncColumnsName="\\files\\xssfTestFileAsyncColumns.xlsx";
   private final  String workingDir=System.getProperty("user.dir");
 
   private final String xssfFilePath=workingDir+xssfFileName;

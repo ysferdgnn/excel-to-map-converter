@@ -197,4 +197,57 @@ public class ExcelParserHSSFCoreTest {
         assert maps!=null;
         Assert.assertNotEquals(0,maps.size());
     }
+
+    @Test
+    public void testParseHssfFileToMapListStartFromSecondRow() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFile = TestFileConstants.getInstance().getHssfFile();
+
+        int rowPointer =1;
+
+        List<Map<String,String>> maps= excelParserHSSFCore.setRowPointer(rowPointer).parseHssfFileToMapList(hssfFile);
+
+        assert maps!=null;
+
+        Assert.assertNotEquals("map list can not be empty",0,maps.size());
+
+        Assert.assertTrue(maps.get(0).keySet().stream().anyMatch(s->s.contentEquals("A")));
+
+        Assert.assertEquals("yusuf",maps.get(rowPointer).get("A"));
+
+
+    }
+
+    @Test
+    public void testParseHssfFileToMapListStartFromSecondRowAsyncColumns() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFileAsync=TestFileConstants.getInstance().getHssfFileAsyncCols();
+        int rowPointer=1;
+
+        List<Map<String,String>> maps = excelParserHSSFCore.setRowPointer(rowPointer).parseHssfFileToMapList(hssfFileAsync);
+
+        assert  maps !=null;
+
+        Assert.assertNotEquals("map list can not be empty",0,maps.size());
+
+        Assert.assertTrue(maps.get(rowPointer).keySet().stream().anyMatch(s->s.contentEquals("A")));
+
+        Assert.assertEquals("yusuf",maps.get(rowPointer).get("A"));
+    }
+
+    @Test
+    public void testParseHssfFileToMapListStartFromSecondRowAndCellsAsHeaderAsyncColumns() throws IOException, InvalidSpreadSheetFormatException {
+        File hssfFileAsync=TestFileConstants.getInstance().getHssfFileAsyncCols();
+        int rowPointer=1;
+        String testColName ="yusuf";
+
+        List<Map<String,String>> maps = excelParserHSSFCore.setIsFirstRowCellHeader(true).setRowPointer(rowPointer).parseHssfFileToMapList(hssfFileAsync);
+
+        assert maps !=null;
+
+        Assert.assertNotEquals("map list can not be empty",0,maps.size());
+
+        Assert.assertTrue(maps.get(rowPointer).keySet().stream().anyMatch(s->s.contentEquals(testColName)));
+
+        Assert.assertEquals("yusuf",maps.get(rowPointer).get(testColName));
+
+    }
 }

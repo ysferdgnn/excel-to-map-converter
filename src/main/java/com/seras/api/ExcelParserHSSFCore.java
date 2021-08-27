@@ -225,7 +225,7 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
 
         for (int i =0;i<cellCountOfTargetRow;i++){
 
-            headerList.add(targetRow.getCell(i).getStringCellValue());
+            headerList.add(targetRow.getCell(i).toString());
         }
         logger.info(String.format("Document headers -> %s", String.join(",", headerList)));
 
