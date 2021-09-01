@@ -222,7 +222,138 @@ public class ExcelToMapConverterImplementationTest {
         Assert.assertEquals("ad",mapFirst.get("ad"));
     }
 
+    @Test
+    public void testFindHeadersFromMapListXssfFile() throws InValidFileFormatException {
+        File file = TestFileConstants.getInstance().getXssfFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.parseExcelFileToMapList(file);
 
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert  headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("A",headerList.get(0));
+        Assert.assertEquals("B",headerList.get(1));
+        Assert.assertEquals("C",headerList.get(2));
+    }
+
+    @Test
+    public void testFindHeadersFromMapListXssfFileRandomRow() throws InValidFileFormatException {
+        File file = TestFileConstants.getInstance().getXssfFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setRowPointer(3).parseExcelFileToMapList(file);
+
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert  headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("A",headerList.get(0));
+        Assert.assertEquals("B",headerList.get(1));
+        Assert.assertEquals("C",headerList.get(2));
+    }
+    @Test
+    public void testFindHeadersFromMapListXssfFileFirstRowAsHeader() throws InValidFileFormatException {
+        File file = TestFileConstants.getInstance().getXssfFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setIsFirstRowCellHeader(true).parseExcelFileToMapList(file);
+
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert  headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("ad",headerList.get(0));
+        Assert.assertEquals("soyad",headerList.get(1));
+        Assert.assertEquals("tc",headerList.get(2));
+    }
+
+    @Test
+    public void testFindHeadersFromMapListHssfFile() throws InValidFileFormatException {
+        File file = TestFileConstants.getInstance().getHssfFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.parseExcelFileToMapList(file);
+
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert  headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("A",headerList.get(0));
+        Assert.assertEquals("B",headerList.get(1));
+        Assert.assertEquals("C",headerList.get(2));
+    }
+    @Test
+    public void testFindHeadersFromMapListHssfFileFirstRowAsHeader() throws InValidFileFormatException {
+        File file = TestFileConstants.getInstance().getHssfFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setIsFirstRowCellHeader(true).parseExcelFileToMapList(file);
+
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert  headerList !=null;
+
+        Assert.assertNotEquals(0, headerList.size());
+        Assert.assertEquals("ad",headerList.get(0));
+        Assert.assertEquals("soyad",headerList.get(1));
+        Assert.assertEquals("tc",headerList.get(2));
+    }
+
+    @Test
+    public void testFindHeadersFromMapListNonExcelFile()  {
+        File file = TestFileConstants.getInstance().getNonExcelFile();
+
+
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(null);
+
+        Assert.assertThrows(InValidFileFormatException.class,()->excelToMapConverterImplementation.parseExcelFileToMapList(file));
+        Assert.assertNull(headerList);
+
+    }
+
+    @Test
+    public void testFindHeadersFromMapListXssfAsyncColumns() throws InValidFileFormatException {
+        File file=TestFileConstants.getInstance().getXssfFileAsyncCols();
+
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.parseExcelFileToMapList(file);
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert headerList!=null;
+
+        Assert.assertNotEquals(0,mapList.size());
+        Assert.assertEquals("A",headerList.get(0));
+        Assert.assertEquals("B",headerList.get(1));
+        Assert.assertEquals("C",headerList.get(2));
+
+    }
+
+    @Test
+    public void testFindHeadersFromMapListXssfAsyncColumnsThirdRowStart() throws InValidFileFormatException {
+        File file=TestFileConstants.getInstance().getXssfFileAsyncCols();
+
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setRowPointer(3).parseExcelFileToMapList(file);
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert headerList!=null;
+
+        Assert.assertNotEquals(0,mapList.size());
+        Assert.assertEquals("A",headerList.get(0));
+        Assert.assertEquals("B",headerList.get(1));
+        Assert.assertEquals("C",headerList.get(2));
+
+    }
+
+    @Test
+    public void testFindHeadersFromMapListXssfAsyncColumnsThirdRowStartFirstRowAsHeader() throws InValidFileFormatException {
+        File file=TestFileConstants.getInstance().getXssfFileAsyncCols();
+
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setRowPointer(3).setIsFirstRowCellHeader(true).parseExcelFileToMapList(file);
+        List<String> headerList = excelToMapConverterImplementation.findHeadersFromMapList(mapList);
+
+        assert headerList!=null;
+
+        Assert.assertNotEquals(0,mapList.size());
+        Assert.assertEquals("4950.0",headerList.get(0));
+        Assert.assertEquals("veli",headerList.get(1));
+        Assert.assertEquals("ali",headerList.get(2));
+
+    }
 
 
 
