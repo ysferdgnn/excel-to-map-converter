@@ -209,7 +209,7 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         int  firstRowCellNumber ;
 
 
-        firstRowCellNumber=row.getSheet().getRow(0).getLastCellNum();
+        firstRowCellNumber=row.getSheet().getRow(rowPointer).getLastCellNum();
 
         for (int i =0;i<firstRowCellNumber;i++){
             headerList.add(CellReference.convertNumToColString(i));
