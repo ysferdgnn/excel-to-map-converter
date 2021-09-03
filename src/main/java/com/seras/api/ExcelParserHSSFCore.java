@@ -138,10 +138,18 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
             return null;
         }
         logger.info("Start parsing rows to map...");
-        hssfRowList.forEach(s->{
-            Map<String,String> rowMap = parseHssfRowToMap(s);
+
+        for (int i =0;i<hssfRowList.size();i++){
+            if (i<rowPointer)
+                continue;
+            Map<String,String> rowMap = parseHssfRowToMap(hssfRowList.get(i));
             rowListAsMap.add(rowMap);
-        });
+        }
+
+//        hssfRowList.forEach(s->{
+//            Map<String,String> rowMap = parseHssfRowToMap(s);
+//            rowListAsMap.add(rowMap);
+//        });
 
         return rowListAsMap;
     }

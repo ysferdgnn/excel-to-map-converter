@@ -143,10 +143,14 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
             return null;
         }
         logger.info("Start parsing rows to map...");
-        xssfRowList.forEach(s->{
-            Map<String,String> rowMap = parseXssfRowToMap(s);
+
+        for (int i =0;i<xssfRowList.size();i++){
+            if (i<rowPointer)
+                continue;
+            Map<String,String> rowMap = parseXssfRowToMap(xssfRowList.get(i));
             rowListAsMap.add(rowMap);
-        });
+        }
+
 
 
 
