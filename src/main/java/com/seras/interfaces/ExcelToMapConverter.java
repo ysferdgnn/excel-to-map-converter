@@ -16,6 +16,7 @@ public interface ExcelToMapConverter {
    List<String> findHeadersFromMapList(List<Map<String,String>> mapList);
    List<String> findSheetNamesFromFile(File file) throws InValidFileFormatException;
    Integer findRowCountFromSheetName(File file,String sheetName) throws InValidFileFormatException;
+   Integer findSheetNumberFromSheetName(File file,String sheetName) throws InValidFileFormatException;
 
 
 

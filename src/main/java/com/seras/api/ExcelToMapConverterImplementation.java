@@ -176,6 +176,58 @@ public class ExcelToMapConverterImplementation implements ExcelToMapConverter {
 
     }
 
+    @Override
+    public Integer findSheetNumberFromSheetName(File file, String sheetName) throws InValidFileFormatException {
+        if(file==null){
+            return -1;
+        }
+        if(Optional.ofNullable(sheetName).map(String::trim).orElse("").contentEquals("")){
+            return null;
+        }
+
+        try {
+            SpreadSheetFormat spreadSheetFormat = ExcelUtilCore.getInstance().findXmlSpreadSheetFormat(file);
+
+            if (spreadSheetFormat==SpreadSheetFormat.HSSF){
+
+                HSSFSheet sheet =ExcelParserHSSFCore.getInstance().getHssfSheetFromFileByName(file,sheetName);
+                if (sheet==null)
+                    return -1;
+
+                HSSFWorkbook workbook = ExcelParserHSSFCore.getInstance().getHssfWorkbookFromFile(file);
+
+                if (workbook==null)
+                    return -1;
+                return workbook.getSheetIndex(sheet);
+
+
+            }
+            else if (spreadSheetFormat==SpreadSheetFormat.XSSF)
+            {
+                XSSFSheet sheet =ExcelParserXSFFCore.getInstance().getXssfSheetFromFileByName(file,sheetName);
+                if (sheet==null)
+                    return -1;
+                XSSFWorkbook workbook = ExcelParserXSFFCore.getInstance().getXssfWorkbookFromFile(file);
+                if (workbook==null)
+                    return -1;
+                return workbook.getSheetIndex(sheet);
+
+            }
+            else{
+
+                throw new InvalidSpreadSheetFormatException();
+            }
+
+        } catch ( InvalidFileExtensionNameException | NotFileException | InvalidSpreadSheetFormatException | IOException | InvalidFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+        catch (InValidFileFormatException e){
+            throw e;
+        }
+
+    }
+
     public ExcelToMapConverterImplementation setRowPointer(int _rowPointer){
         ExcelToMapConverterImplementation.rowPointer=_rowPointer;
         return  this;
