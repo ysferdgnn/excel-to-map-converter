@@ -146,11 +146,6 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
             rowListAsMap.add(rowMap);
         }
 
-//        hssfRowList.forEach(s->{
-//            Map<String,String> rowMap = parseHssfRowToMap(s);
-//            rowListAsMap.add(rowMap);
-//        });
-
         return rowListAsMap;
     }
 
@@ -201,8 +196,7 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
             return null;
         }
         HSSFSheet sheet = workbook.getSheetAt(sheetPointer);
-        List<Map<String,String>> maps=parseHssfSheetToMapList(sheet);
-        return maps;
+        return parseHssfSheetToMapList(sheet);
 
 
     }
@@ -260,6 +254,16 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         }
 
         return headerList;
+    }
+
+    @Override
+    public Integer getMaxRowCount(HSSFSheet sheet) {
+        return null;
+    }
+
+    @Override
+    public List<String> getSheetNames(HSSFWorkbook workbook) {
+        return null;
     }
 
     public ExcelParserHSSFCore setRowPointer(int startPointer){
