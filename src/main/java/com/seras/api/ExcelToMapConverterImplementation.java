@@ -7,13 +7,19 @@ import com.seras.exceptions.InvalidFileExtensionNameException;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
 import com.seras.exceptions.NotFileException;
 import com.seras.interfaces.ExcelToMapConverter;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -94,6 +100,82 @@ public class ExcelToMapConverterImplementation implements ExcelToMapConverter {
         Map<String,String> map = mapList.get(0);
         return new ArrayList<>(map.keySet());
     }
+
+    @Override
+    public List<String> findSheetNamesFromFile(File file) throws InValidFileFormatException {
+        if(file==null){
+            return null;
+        }
+
+        try {
+            SpreadSheetFormat spreadSheetFormat = ExcelUtilCore.getInstance().findXmlSpreadSheetFormat(file);
+
+            if (spreadSheetFormat==SpreadSheetFormat.HSSF){
+               HSSFWorkbook workbook= ExcelParserHSSFCore.getInstance().getHssfWorkbookFromFile(file);
+               return ExcelParserHSSFCore.getInstance().getSheetNames(workbook);
+
+
+            }
+            else if (spreadSheetFormat==SpreadSheetFormat.XSSF)
+            {
+                XSSFWorkbook workbook =ExcelParserXSFFCore.getInstance().getXssfWorkbookFromFile(file);
+                return ExcelParserXSFFCore.getInstance().getSheetNames(workbook);
+
+            }
+            else{
+
+                throw new InvalidSpreadSheetFormatException();
+            }
+
+        } catch ( InvalidFileExtensionNameException | NotFileException | InvalidSpreadSheetFormatException | IOException | InvalidFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+        catch (InValidFileFormatException e){
+            throw e;
+        }
+
+    }
+
+    @Override
+    public Integer findRowCountFromSheetName(File file,String sheetName) throws InValidFileFormatException {
+        if (Optional.of(sheetName).map(String::trim).orElse("").contentEquals("")){
+            return -1;
+        }
+        if (file ==null){
+            return  null;
+        }
+        try {
+            SpreadSheetFormat spreadSheetFormat = ExcelUtilCore.getInstance().findXmlSpreadSheetFormat(file);
+
+            if (spreadSheetFormat==SpreadSheetFormat.HSSF){
+
+                HSSFSheet sheet =ExcelParserHSSFCore.getInstance().getHssfSheetFromFileByName(file,sheetName);
+                return ExcelParserHSSFCore.getInstance().getMaxRowCount(sheet);
+
+
+            }
+            else if (spreadSheetFormat==SpreadSheetFormat.XSSF)
+            {
+                XSSFSheet sheet =ExcelParserXSFFCore.getInstance().getXssfSheetFromFileByName(file,sheetName);
+                return  ExcelParserXSFFCore.getInstance().getMaxRowCount(sheet);
+
+            }
+            else{
+
+                throw new InvalidSpreadSheetFormatException();
+            }
+
+        } catch ( InvalidFileExtensionNameException | NotFileException | InvalidSpreadSheetFormatException | IOException | InvalidFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+        catch (InValidFileFormatException e){
+            throw e;
+        }
+
+    }
+
     public ExcelToMapConverterImplementation setRowPointer(int _rowPointer){
         ExcelToMapConverterImplementation.rowPointer=_rowPointer;
         return  this;
@@ -106,5 +188,7 @@ public class ExcelToMapConverterImplementation implements ExcelToMapConverter {
         ExcelToMapConverterImplementation.isFirstRowCellHeader=_isIsFirstRowCellHeader;
         return this;
     }
+
+
 
 }
