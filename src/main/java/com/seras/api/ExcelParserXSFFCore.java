@@ -4,6 +4,8 @@ import com.seras.constants.LogConstants;
 import com.seras.enums.SpreadSheetFormat;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
 import com.seras.interfaces.ExcelParserXSSF;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -220,6 +222,31 @@ public class ExcelParserXSFFCore implements ExcelParserXSSF {
         }
 
         return headerList;
+    }
+
+    @Override
+    public Integer getMaxRowCount(XSSFSheet sheet) {
+        if(sheet ==null){
+            return -1;
+        }
+        return sheet.getPhysicalNumberOfRows();
+    }
+
+    @Override
+    public List<String> getSheetNames(XSSFWorkbook workbook) {
+        List<String> nameList = new ArrayList<String>();
+        if(workbook==null){
+            return null;
+        }
+        Integer sheetCount=workbook.getNumberOfSheets();
+        if (Optional.ofNullable(sheetCount).orElse(-1).equals(-1)){
+            return  null;
+        }
+
+        for (int i =0; i<sheetCount;i++){
+            nameList.add(workbook.getSheetName(i));
+        }
+        return nameList;
     }
 
     @Override
