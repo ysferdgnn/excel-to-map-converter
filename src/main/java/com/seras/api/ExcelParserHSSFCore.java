@@ -146,6 +146,11 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
             rowListAsMap.add(rowMap);
         }
 
+//        hssfRowList.forEach(s->{
+//            Map<String,String> rowMap = parseHssfRowToMap(s);
+//            rowListAsMap.add(rowMap);
+//        });
+
         return rowListAsMap;
     }
 
@@ -258,13 +263,27 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
 
     @Override
     public Integer getMaxRowCount(HSSFSheet sheet) {
-        return null;
+        if(sheet ==null){
+            return -1;
+        }
+        return sheet.getPhysicalNumberOfRows();
     }
 
     @Override
     public List<String> getSheetNames(HSSFWorkbook workbook) {
-        return null;
+        List<String> nameList = new ArrayList<String>();
+        if(workbook==null){
+            return null;
+        }
+        int sheetCount=workbook.getNumberOfSheets();
+
+
+        for (int i =0; i<sheetCount;i++){
+            nameList.add(workbook.getSheetName(i));
+        }
+        return nameList;
     }
+
 
     public ExcelParserHSSFCore setRowPointer(int startPointer){
         ExcelParserHSSFCore.rowPointer =startPointer;
@@ -278,4 +297,5 @@ public class ExcelParserHSSFCore implements ExcelParserHSSF {
         ExcelParserHSSFCore.sheetPointer=sheetPointer;
         return this;
     }
+
 }
