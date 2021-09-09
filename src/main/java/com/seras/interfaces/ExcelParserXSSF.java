@@ -4,6 +4,8 @@ import com.seras.exceptions.InValidFileFormatException;
 import com.seras.exceptions.InvalidFileExtensionNameException;
 import com.seras.exceptions.InvalidSpreadSheetFormatException;
 import com.seras.exceptions.NotFileException;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -44,4 +46,8 @@ public interface ExcelParserXSSF {
     List<String> findCellHeaderNamesFromFirstRowXssfRowByRow(XSSFRow row);
 
     List<String > findCellHeaderNamesByFirstXssfRowDefault(XSSFRow row);
+
+    Integer getMaxRowCount(XSSFSheet sheet);
+
+    List<String> getSheetNames(XSSFWorkbook workbook);
 }
