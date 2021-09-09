@@ -45,5 +45,9 @@ public interface ExcelParserHSSF {
 
     List<String> findCellHeaderNamesByFirstHssfRowDefault(HSSFRow row);
 
+    Integer getMaxRowCount(HSSFSheet sheet);
+
+    List<String> getSheetNames(HSSFWorkbook workbook);
+
 
 }
