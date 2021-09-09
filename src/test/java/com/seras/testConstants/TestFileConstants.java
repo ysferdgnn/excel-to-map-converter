@@ -17,6 +17,7 @@ public class TestFileConstants {
   private final  String nonExcelFileName ="\\files\\test.txt";
   private final  String hssfFileAsyncColumnsName="\\files\\hssfTestFileAsyncColumns.xls";
   private final  String xssfFileAsyncColumnsName="\\files\\xssfTestFileAsyncColumns.xlsx";
+  private final String halkbankXssfFileName = "\\files\\halkbank.xlsx";
   private final  String workingDir=System.getProperty("user.dir");
 
   private final String xssfFilePath=workingDir+xssfFileName;
@@ -25,11 +26,14 @@ public class TestFileConstants {
   private final String hssfFileAsyncColumnsPath=workingDir+hssfFileAsyncColumnsName;
   private final String xssfFileAsyncColumnsPath=workingDir+xssfFileAsyncColumnsName;
 
+  private final String halkbankXssfPath = workingDir+halkbankXssfFileName;
+
   private File xssfFile;
   private File hssfFile;
   private File nonExcelFile;
   private File hssfFileAsyncCols;
   private File xssfFileAsyncCols;
+  private File halkbankFile;
 
   public File getXssfFile(){
       xssfFile=new File(xssfFilePath);
@@ -53,6 +57,11 @@ public class TestFileConstants {
       xssfFileAsyncCols = new File(xssfFileAsyncColumnsPath);
       return xssfFileAsyncCols;
   }
+  public File getHalkbankFile (){
+      halkbankFile=new File(halkbankXssfPath);
+      return halkbankFile;
+  }
+
 
 
 
