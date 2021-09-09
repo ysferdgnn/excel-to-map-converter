@@ -355,6 +355,19 @@ public class ExcelToMapConverterImplementationTest {
 
     }
 
+    @Test
+    public void testHalkbankFile() throws InValidFileFormatException {
+        File file =TestFileConstants.getInstance().getHalkbankFile();
+        List<Map<String,String>> mapList = excelToMapConverterImplementation.setIsFirstRowCellHeader(true).setRowPointer(23).parseExcelFileToMapList(file);
+
+        mapList.stream().forEach(s->{
+            s.keySet().forEach(a->{
+                System.out.print(a+" : "+s.get(a)+" ; ");
+            });
+            System.out.println();
+        });
+
+    }
 
 
 
