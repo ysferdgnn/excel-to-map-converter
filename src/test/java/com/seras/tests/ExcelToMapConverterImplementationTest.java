@@ -369,6 +369,14 @@ public class ExcelToMapConverterImplementationTest {
 
     }
 
+    @Test
+    public void testFindSheetIndexFromSheetName() throws InValidFileFormatException {
+        File file =TestFileConstants.getInstance().getHalkbankFile();
+        int index = excelToMapConverterImplementation.findSheetNumberFromSheetName(file,"Sayfa1");
+
+        Assert.assertEquals(index,0);
+    }
+
 
 
 

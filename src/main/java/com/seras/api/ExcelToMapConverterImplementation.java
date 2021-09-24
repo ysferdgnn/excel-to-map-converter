@@ -198,7 +198,7 @@ public class ExcelToMapConverterImplementation implements ExcelToMapConverter {
 
                 if (workbook==null)
                     return -1;
-                return workbook.getSheetIndex(sheet);
+                return workbook.getSheetIndex(sheet.getSheetName());
 
 
             }
@@ -210,7 +210,7 @@ public class ExcelToMapConverterImplementation implements ExcelToMapConverter {
                 XSSFWorkbook workbook = ExcelParserXSFFCore.getInstance().getXssfWorkbookFromFile(file);
                 if (workbook==null)
                     return -1;
-                return workbook.getSheetIndex(sheet);
+                return workbook.getSheetIndex(sheet.getSheetName());
 
             }
             else{
